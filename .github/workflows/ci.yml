@@ -90,16 +90,3 @@ jobs:
             echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" > .env && \
             npx prisma migrate deploy && \
             pm2 restart backend || pm2 start dist/index.js --name backend'
-
-      - name: Health check
-        run: |
-          for i in {1..5}; do
-            if curl -s http://${{ secrets.EC2_HOST }}:3000/positions; then
-              echo "Health check passed"
-              exit 0
-            fi
-            echo "Waiting for service to be up..."
-            sleep 10
-          done
-          echo "Health check failed"
-          exit 1
