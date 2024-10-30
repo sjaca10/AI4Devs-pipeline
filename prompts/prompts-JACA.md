@@ -891,9 +891,9 @@ host    all             all             0.0.0.0/0               md5
 sudo -u postgres psql
 
 # Inside psql, run these commands:
-CREATE USER LTIdbUser WITH PASSWORD 'XYZ';
-CREATE DATABASE LTIdb;
-GRANT ALL PRIVILEGES ON DATABASE LTIdb TO LTIdbUser;
+CREATE USER "LTIdbUser" WITH PASSWORD 'D1ymf8wyQEGthFR1E9xhCq';
+CREATE DATABASE "LTIdb";
+GRANT ALL PRIVILEGES ON DATABASE "LTIdb" TO "LTIdbUser";
 
 # Exit psql
 \q
@@ -1069,3 +1069,103 @@ Make sure to:
 - Type the password exactly as 'XYZ' (case sensitive)
 - Check for any hidden spaces or special characters
 - Ensure you're using the correct username (LTIdbUser is case sensitive)
+
+
+
+```
+How to install pm2 in the AWS EC2 instance?
+```
+
+Here's how to install PM2 on your AWS EC2 instance:
+
+1. Using npm (if Node.js is already installed):
+```bash
+# Install PM2 globally
+sudo npm install -g pm2
+
+# Verify installation
+pm2 --version
+```
+
+
+2. Basic PM2 commands after installation:
+```bash
+# Start an application
+pm2 start app.js
+
+# Start with a specific name
+pm2 start app.js --name "my-app"
+
+# Enable startup script (to run PM2 when server reboots)
+pm2 startup
+
+# Save current process list
+pm2 save
+
+# Other useful commands
+pm2 list          # List all processes
+pm2 monit         # Monitor all processes
+pm2 logs          # Display logs
+pm2 stop all      # Stop all processes
+pm2 restart all   # Restart all processes
+```
+
+
+If you get any permission errors during installation, you might need to:
+```bash
+# Fix npm permissions
+sudo chown -R $USER:$GROUP ~/.npm
+sudo chown -R $USER:$GROUP ~/.config
+
+# Then try installing PM2 again
+sudo npm install -g pm2
+```
+
+
+Remember to run `pm2 startup` and `pm2 save` after starting your applications to ensure they restart automatically if the server reboots.
+
+
+
+```
+There's a new error:
+sudo: npm: command not found
+which actually works when doing npm without sudo
+```
+
+Since npm is installed under your user (likely via nvm) and not system-wide, you should install PM2 without sudo. Here's the correct way:
+
+```bash
+# Install PM2 globally for your user
+npm install -g pm2
+
+# Verify installation
+pm2 --version
+```
+
+
+
+If you need to set up PM2 startup script later, use this approach:
+```bash
+# Generate startup script (this will give you a sudo command to run)
+pm2 startup
+
+# Run the command that PM2 gives you (it will look something like this):
+sudo env PATH=$PATH:/home/ec2-user/.nvm/versions/node/v{YOUR_NODE_VERSION}/bin pm2 startup systemd -u ec2-user --hp /home/ec2-user
+
+# Save your process list
+pm2 save
+```
+
+
+
+Common PM2 commands (no sudo needed):
+```bash
+pm2 start app.js
+pm2 list
+pm2 monit
+pm2 logs
+pm2 stop all
+pm2 restart all
+```
+
+The key is to avoid using sudo with npm when you've installed Node.js via nvm, as it's a user-level installation.
